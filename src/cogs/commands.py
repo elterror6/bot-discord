@@ -14,5 +14,17 @@ class Comandos (commands.Cog):
         response = discord.Embed(title="Pong!",description=f"{lat} ms", color=discord.Color.dark_gray())
 
         await interaction.response.send_message(embed=response)
+
+    @app_commands.command(name="avatar", description="Muestra la foto de perfil del usuario dado.")
+    @app_commands.describe(user="Usuario del que quieres ver el avatar.")
+    async def avatar(self, interaction: discord.Interaction, user: discord.User = None):
+        if user is None:
+            user = interaction.user
+        avatar_url = user.display_avatar.url
+        response = discord.Embed(title=f"Avatar de {user.name}", color=discord.Color.dark_gray())
+        response.set_image(url=avatar_url)
+
+        await interaction.response.send_message(embed=response)
+
 async def setup(bot):
     await bot.add_cog(Comandos(bot))
