@@ -7,7 +7,8 @@ import signal
 import asyncio
 import logging
 from logger_config import get_logger
-from salute_utils import init_salute_file
+from utils.salute_utils import init_salute_file
+from utils.salute_utils import add_guild_salute
 
 logger = get_logger("BOT")
 
@@ -67,8 +68,14 @@ async def registrar_comandos():
         logger.info(f"Comandos registrados correctamente. {len(bot.tree.get_commands())} comandos registrados.")
     except Exception as e:
         logger.error(f"Error al registrar comandos. Trace: {e}")
+
 async def cargar_extensiones():
     await bot.load_extension("cogs.commands")
     await bot.load_extension("cogs.salute")
+
+@bot.event
+async def on_guild_join(guild):
+    logger.info(f"Unido al servidor: {guild.name} (ID: {guild.id})")
+    add_guild_salute(guild.id)
 
 bot.run(TOKEN)
