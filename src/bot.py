@@ -7,6 +7,7 @@ import signal
 import asyncio
 import logging
 from logger_config import get_logger
+from salute_utils import init_salute_file
 
 logger = get_logger("BOT")
 
@@ -32,7 +33,13 @@ signal.signal(signal.SIGINT, signal_handler)
 async def on_ready():
     
     logger.info(f"Conectado como {bot.user}")
-    await bot.load_extension("cogs.commands")
+    logger.info(f"Cargando datos ...")
+    init_salute_file(bot)
+    logger.info("Datos cargados correctamente.")
+
+    logger.info("Cargando extensiones...")
+    await cargar_extensiones()
+    logger.info("Extensiones cargadas correctamente.")
 
     await registrar_comandos()
 
@@ -60,4 +67,8 @@ async def registrar_comandos():
         logger.info(f"Comandos registrados correctamente. {len(bot.tree.get_commands())} comandos registrados.")
     except Exception as e:
         logger.error(f"Error al registrar comandos. Trace: {e}")
+async def cargar_extensiones():
+    await bot.load_extension("cogs.commands")
+    await bot.load_extension("cogs.salute")
+
 bot.run(TOKEN)
