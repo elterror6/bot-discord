@@ -1,1 +1,5 @@
+
 .env
+cogs/__pycache__/
+*.py[cod]
+discordbot/
