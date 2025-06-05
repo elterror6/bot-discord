@@ -6,13 +6,9 @@ from dotenv import load_dotenv
 import signal
 import asyncio
 import logging
+from logger_config import get_logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s %(levelname)s \t %(name)s %(message)s',
-    style='%',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+logger = get_logger("BOT")
 
 logger = logging.getLogger("BOT")
 
