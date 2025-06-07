@@ -40,7 +40,10 @@ async def on_ready():
     logger.info("Datos cargados correctamente.")
 
     logger.info("Cargando extensiones...")
-    await cargar_extensiones()
+    try:
+        await cargar_extensiones()
+    except Exception as e:
+        logger.error(f"Error al cargar extensiones. Trace: {e}")
     logger.info("Extensiones cargadas correctamente.")
 
     await registrar_comandos()
