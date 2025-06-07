@@ -9,7 +9,7 @@ import logging
 from logger_config import get_logger
 from utils.salute_utils import init_salute_file
 from utils.salute_utils import add_guild_salute
-from utils.salute_utils import load_salute_data
+from utils.salute_utils import load_salute_data, save_salute_data
 
 logger = get_logger("BOT")
 
@@ -87,8 +87,7 @@ async def on_guild_remove(guild):
     data = load_salute_data()
     if str(guild.id) in data:
         del data[str(guild.id)]
-        with open("data/salute_data.json", "w") as f:
-            json.dump(data, f, indent=4)
+        save_salute_data(data)
     logger.info(f"Datos de saludo eliminados para el servidor: {guild.name} (ID: {guild.id})")
 
 @bot.event
