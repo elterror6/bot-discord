@@ -12,14 +12,16 @@ class Salute(commands.GroupCog, name="salute"):
         super().__init__()
         self.bot = bot
     @app_commands.command(name="activate", description="Activar la funcionalidad de saludo para la guild.")
-    async def activate (self, interaction: discord.Interaction):
+    @app_commands.describe(chanel="Canal donde se enviará el saludo. Si no se especifica, se usará el canal anteriormente especificado.")
+    async def activate (self, interaction: discord.Interaction, chanel: discord.TextChannel = None):
         data = load_salute_data()
         gui = str(interaction.guild.id)
 
         if gui not in data:
             data[gui] = {
                 "salute": "¡Hola! {user}",
-                "enabled": True
+                "enabled": True,
+                "chanel_id": chanel.id if chanel else None
             }
         else:
             data[gui]["enabled"] = True
@@ -55,6 +57,23 @@ class Salute(commands.GroupCog, name="salute"):
             data[gui]["salute"] = message
         save_salute_data(data)
         response = discord.Embed(title="Saludo configurado", description=f"El mensaje de saludo ha sido configurado a: {message}", color=discord.Color.dark_grey())
+        await interaction.response.send_message(embed=response)
+    @app_commands.command(name="chanel", description="Configurar el canal donde se enviará el saludo.")
+    @app_commands.describe(chanel="Canal donde se enviará el saludo.")
+    async def set_chanel (self, interaction: discord.Interaction, chanel: discord.TextChannel):
+        data = load_salute_data()
+        gui = str(interaction.guild.id)
+
+        if gui not in data:
+            data[gui] = {
+                "salute": "¡Hola! {user}",
+                "enabled": True,
+                "chanel_id": chanel.id
+            }
+        else:
+            data[gui]["chanel_id"] = chanel.id
+        save_salute_data(data)
+        response = discord.Embed(title="Canal configurado", description=f"El canal para el saludo ha sido configurado a: {chanel.mention}", color=discord.Color.dark_grey())
         await interaction.response.send_message(embed=response)
 
 async def setup (bot: commands.Bot):

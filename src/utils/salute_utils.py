@@ -17,7 +17,8 @@ def init_salute_file(bot):
         if gid not in data:
             data[gid] = {
                 "salute": DEFAULT_SALUTE,
-                "enabled": False
+                "enabled": False,
+                "chanel_id": None
             }
             updated = True
     if updated:
@@ -36,6 +37,7 @@ def add_guild_salute(guild_id, salute=DEFAULT_SALUTE, enabled=True):
     data = load_salute_data()
     data[str(guild_id)] = {
         "salute": salute,
-        "enabled": enabled
+        "enabled": enabled,
+        "chanel_id": None
     }
     save_salute_data(data)
