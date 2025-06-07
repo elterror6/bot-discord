@@ -9,6 +9,7 @@ import logging
 from logger_config import get_logger
 from utils.salute_utils import init_salute_file
 from utils.salute_utils import add_guild_salute
+from utils.salute_utils import load_salute_data
 
 logger = get_logger("BOT")
 
@@ -77,5 +78,29 @@ async def cargar_extensiones():
 async def on_guild_join(guild):
     logger.info(f"Unido al servidor: {guild.name} (ID: {guild.id})")
     add_guild_salute(guild.id)
+@bot.event
+async def on_guild_remove(guild):
+    logger.info(f"Desconectado del servidor: {guild.name} (ID: {guild.id})")
+    data = load_salute_data()
+    if str(guild.id) in data:
+        del data[str(guild.id)]
+        with open("data/salute_data.json", "w") as f:
+            json.dump(data, f, indent=4)
+    logger.info(f"Datos de saludo eliminados para el servidor: {guild.name} (ID: {guild.id})")
+
+@bot.event
+async def on_member_join(member):
+    data = load_salute_data()
+    gui = str(member.guild.id)
+
+    if gui in data and data[gui]["enabled"]:
+        salute_message = data[gui]["salute"].format(user=member.mention)
+        channel_id = data[gui].get("chanel_id")
+        if channel_id:
+            channel = member.guild.get_channel(channel_id)
+            if channel:
+                await channel.send(salute_message)
+            else:
+                logger.warning(f"Canal no encontrado: {channel_id} en el servidor {member.guild.name}")
 
 bot.run(TOKEN)
