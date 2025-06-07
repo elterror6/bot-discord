@@ -10,6 +10,7 @@ from logger_config import get_logger
 from utils.salute_utils import init_salute_file
 from utils.salute_utils import add_guild_salute
 from utils.salute_utils import load_salute_data, save_salute_data
+from utils.image_utils import generate_default_welcome_image
 
 logger = get_logger("BOT")
 
@@ -95,14 +96,16 @@ async def on_member_join(member):
     data = load_salute_data()
     gui = str(member.guild.id)
 
-    if gui in data and data[gui]["enabled"]:
-        salute_message = data[gui]["salute"].format(user=member.mention)
-        channel_id = data[gui].get("chanel_id")
-        if channel_id:
-            channel = member.guild.get_channel(channel_id)
-            if channel:
-                await channel.send(salute_message)
-            else:
-                logger.warning(f"Canal no encontrado: {channel_id} en el servidor {member.guild.name}")
+    if not data.get(gui, {}).get("enabled", False):
+        return
+    
+    msg_template = data[gui].get("salute", "¡Hola! {user}!")
+    msg = msg_template.format(user=member.mention)
+
+    for channel in member.guild.text_channels:
+        if channel.permissions_for(member.guild.me).send_messages:
+            file = generate_default_welcome_image(member.name)
+            await channel.send(content=msg, file=file)
+            break
 
 bot.run(TOKEN)
