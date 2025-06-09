@@ -3,3 +3,4 @@ cogs/__pycache__/
 *.py[cod]
 discordbot/
 data/
+error.txt

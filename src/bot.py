@@ -22,6 +22,7 @@ TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
+intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -104,7 +105,7 @@ async def on_member_join(member):
 
     for channel in member.guild.text_channels:
         if channel.permissions_for(member.guild.me).send_messages:
-            file = generate_default_welcome_image(member.name)
+            file = generate_default_welcome_image(member)
             await channel.send(content=msg, file=file)
             break
 
