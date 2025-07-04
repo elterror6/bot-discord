@@ -34,14 +34,31 @@ def init_salute_file(bot):
             json.dump(data, f, indent=4)
 
 def load_salute_data():
+    """
+    Carga los datos de saludos desde el archivo JSON.
+    Returns:
+        dict: Un diccionario con los datos de saludos por guild.
+    """
     if not os.path.exists(DATA_FILE):
         return {}
     with open(DATA_FILE, "r") as f:
         return json.load(f)
 def save_salute_data(data):
+    """
+    Guarda los datos de saludos en el archivo JSON.
+    Args:
+        data (dict): Un diccionario con los datos de saludos por guild.
+    """
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=4)
 def add_guild_salute(guild_id, salute=DEFAULT_SALUTE, enabled=True):
+    """
+    Agrega o actualiza los datos de saludo para una guild específica.
+    Args:
+        guild_id (int): El ID de la guild.
+        salute (str): El mensaje de saludo personalizado.
+        enabled (bool): Indica si la funcionalidad de saludo está activada.
+    """
     data = load_salute_data()
     data[str(guild_id)] = {
         "salute": salute,
