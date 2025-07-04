@@ -1,9 +1,18 @@
+"""
+Genera una imagen de bienvenida personalizada para nuevos miembros de un servidor de Discord."""
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import discord
 import io
 import requests
 
 def generate_default_welcome_image(member: discord.Member) -> discord.File:
+    """
+    Genera una imagen de bienvenida por defecto para nuevos miembros de un servidor de Discord.
+    Args:
+        member (discord.Member): El miembro de Discord al que se le generará la imagen de bienvenida.
+    Returns:
+        discord.File: Un archivo de imagen que contiene la imagen de bienvenida personalizada.
+    """
     # Configuración de imagen
     width, height = 800, 400
     background_color = (30, 30, 30)
