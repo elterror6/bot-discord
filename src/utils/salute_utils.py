@@ -1,3 +1,6 @@
+"""
+Utilidades para manejar saludos personalizados en un bot de Discord.
+"""
 import os
 import json
 
@@ -5,7 +8,12 @@ DATA_FILE = "data/salute_data.json"
 DEFAULT_SALUTE = "¡Hola! {user}"
 
 def init_salute_file(bot):
-
+    """
+    Inicializa el archivo de datos de saludos si no existe.
+    Agrega entradas para cada guild en las que el bot está presente.
+    Args:
+        bot (commands.Bot): La instancia del bot de Discord.
+    """
     if not os.path.exists(DATA_FILE):
         data = {}
     else:
