@@ -10,10 +10,9 @@ import signal
 import asyncio
 import logging
 from logger_config import get_logger
-from utils.salute_utils import init_salute_file
-from utils.salute_utils import add_guild_salute
-from utils.salute_utils import load_salute_data, save_salute_data
 from utils.image_utils import generate_default_welcome_image
+from utils.database import Database
+from utils.guild_crud import add_guild, get_guild, update_guild, delete_guild, ensure_all_guilds
 
 logger = get_logger("BOT")
 
@@ -46,10 +45,13 @@ async def on_ready():
     Registra los comandos y carga las extensiones.
     También inicializa el archivo de saludos y registra los comandos globales.
     """
+    db = Database.get_instance()
+    await db.test_connection()
+
     logger.info(f"Conectado como {bot.user}")
-    logger.info(f"Cargando datos ...")
-    init_salute_file(bot)
-    logger.info("Datos cargados correctamente.")
+    logger.info(f"Comprobando datos ...")
+    await ensure_all_guilds(bot)  # Asegura que todas las guilds tengan su configuración inicial
+    logger.info("Datos verificados correctamente.")
 
     logger.info("Cargando extensiones...")
     try:
@@ -111,7 +113,7 @@ async def on_guild_join(guild):
     Registra el servidor y crea un saludo predeterminado.
     """
     logger.info(f"Unido al servidor: {guild.name} (ID: {guild.id})")
-    add_guild_salute(guild.id)
+    add_guild(guild.id)
 @bot.event
 async def on_guild_remove(guild):
     """
@@ -119,10 +121,9 @@ async def on_guild_remove(guild):
     Elimina los datos de saludo del servidor.
     """
     logger.info(f"Desconectado del servidor: {guild.name} (ID: {guild.id})")
-    data = load_salute_data()
+    data = get_guild(guild_id=str(guild.id))
     if str(guild.id) in data:
-        del data[str(guild.id)]
-        save_salute_data(data)
+        await delete_guild(guild_id=str(guild.id))
     logger.info(f"Datos de saludo eliminados para el servidor: {guild.name} (ID: {guild.id})")
 
 @bot.event
@@ -131,9 +132,9 @@ async def on_member_join(member):
     Evento que se ejecuta cuando un nuevo miembro se une a un servidor.
     Envía un mensaje de saludo al canal de texto predeterminado del servidor.
     """
-    data = load_salute_data()
     gui = str(member.guild.id)
-
+    data = get_guild(guild_id=gui)
+    
     if not data.get(gui, {}).get("enabled", False):
         return
     
